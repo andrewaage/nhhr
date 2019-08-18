@@ -1,0 +1,290 @@
+---
+title: "Crash course in R for FIE453"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Create student_df
+n <- 100
+student_df <- tibble(student_number = seq(1, n),
+                    age = runif(n, 18, 40),
+                    score = rnorm(n, 3, 1),
+                    city = sample(c("Bergen", "Oslo", "Trondheim"), n, replace = T))
+
+# Import german credit data
+# Load data
+url <- "http://freakonometrics.free.fr/german_credit.csv"
+raw <- read_csv(url)
+
+# Make names valid
+credit_df <- raw %>%
+  set_tidy_names(syntactic = TRUE)
+
+# Select a subset of colums and rename for consistency
+credit_df <- credit_df %>%
+  select(Creditability, 
+         Duration_months = Duration.of.Credit..month., 
+         Credit_amount = Credit.Amount, 
+         Age = Age..years., 
+         Occupation, 
+         Foreign_worker = Foreign.Worker, 
+         Gender_marital = Sex...Marital.Status) 
+
+# Fix factor-columns
+credit_df <- credit_df %>%
+  mutate(
+    Occupation = case_when(
+      Occupation == 1 ~ "Unemployed - non-resident",
+      Occupation == 2 ~ "Unemployed - resident",
+      Occupation == 3 ~ "Normal worker",
+      Occupation == 4 ~ "Manager or higher"
+    ),
+    Gender_marital = case_when(
+      Gender_marital == 1 ~ "Man, single",
+      Gender_marital == 2 ~ "Woman, married",
+      Gender_marital == 3 ~ "Man, married",
+      Gender_marital == 4 ~ "Woman, single"
+    )
+  )
+
+```
+
+
+## Topic 1 - basic R operations
+
+### Vectors
+
+*Let's start with the basics...*
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+Write the R code required to create a vector [2, 2] and name it "x". Print "x" to the console using print().
+
+```{r vector, exercise=TRUE}
+
+```
+
+```{r vector-hint}
+# Use the c-function to create vectors, e.g
+x <- c(1, 1)
+```
+
+Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3, 4]. 
+
+1. Add y and z. 
+2. *Combine* y and z, creating one long vector with 6 elements.
+3. Create a new vector which tests if each element in y is equal to the elements in z.
+
+```{r vectorplus, exercise=TRUE}
+
+```
+
+```{r vectorplus-hint}
+# The c-function can also be used to combine vectors
+combined <- c(vector_a, vector_b)
+```
+
+### Data frames (tibbles)
+
+Create a tibble (note: a tibble is just an improved data frame) called "test_df" with columns "student_number" = [1, 2, 3], "age" = [23, 25, 28], "score" = [2, 3, 4], "city" = c("Bergen", "Oslo", "Trondheim"). Print the output using print()
+
+```{r dataframe, exercise=TRUE}
+test_df <- tibble(student_number = ,
+                  age = ,
+                  score = ,
+                  city = )
+```
+
+Now, extract only the "age" column from test_df using "$" and print it. 
+```{r df_dollar, exercise=TRUE}
+
+```
+
+```{r df_dollar-hint}
+# To extract y from a datamframe named df, use $ as such:
+df$y
+```
+
+Using the dataframe format, it is easy to conduct analysis. We have already made a more complex version of test_df called student_df.
+
+Run a summary on the dataframe called student_df:
+```{r dataframe_summary, exercise=TRUE}
+
+```
+
+Let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
+
+```{r dataframe_plot, exercise=TRUE}
+ggplot(student_df, aes(x = age, y = score)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ city) +
+  theme_minimal()
+```
+
+### Quiz
+```{r quiz}
+quiz(
+  question("What is the difference between a list and a dataframe?",
+    answer("A dataframe can contain anything, while a list is limited to equal length vectors"),
+    answer("A list can contain anything, while a dataframe is limited to equal length vectors", correct = TRUE),
+    answer("A dataframe is simply a more efficient type of list"),
+    answer("A list is simply a more efficient type of dataframe")
+  ),
+  question("Can a vector contain two elements of different types?",
+    answer("No", correct = TRUE),
+    answer("Yes"),
+    answer("It depends")
+  ),
+  question("What is the difference between == and = in R?",
+    answer(" = can be used for assignment, while == is used for logical comparisons", correct = TRUE),
+    answer("They are equal, but == is more commonly used for logical comparisons"),
+    answer(" = is not used at all in R, while == is used for logical comparisons")
+  ),
+    question("What does it mean that R is a vectorized language?",
+    answer("R is optimized for working with vector operations, as opposed to e.g. loops", correct = TRUE),
+    answer("R can only use vectors, and everything that exists in R is either a vector or based on a vector")
+  )
+)
+```
+
+## Topic 2 - data manipulation
+Now we will move on to use real data, more specifically a dataset from a german credit bank. The data has been imported already, named "credit_df".
+
+Run a summary on the data frame. 
+
+```{r summary2, exercise = TRUE}
+
+```
+
+Select only the "Foreign_worker"-column from "credit_df". 
+
+```{r select, exercise = TRUE}
+
+```
+
+```{r select-hint}
+# If you have a dataframe, df, you can select column y as follows:
+df %>%
+  select(y)
+
+```
+
+Create a new variable which is TRUE if Foreign_worker == 1 and 0 otherwise. Save it to credit_df and print a table of the variable to the console.
+
+```{r mutate, exercise = TRUE}
+
+```
+
+```{r mutate-solution}
+# In order to add a variable to a dataframe, you can use mutate as such:
+credit_df <- credit_df %>%
+  mutate(is_foreign = if_else(Foreign_worker == 1, TRUE, FALSE))
+
+table(credit_df$is_foreign)
+
+```
+
+Create a new dataframe, "credit_df_filtered", which only contains observations where Creditability is 1. How many rows are left in this new dataframe, and how many percent of the observations are creditworthy?
+
+```{r filter, exercise = TRUE}
+
+```
+
+```{r filter-hint}
+# In order to filter a dataframe, use the filter-function.
+df_filtered <- df %>%
+  filter(x > 3)
+
+# Count rows in each df
+nrow(df_filtered) / nrow(df)
+```
+
+Find the average age for customers where Creditability is 1 and 0 respectively. Use group_by + summarise. 
+
+```{r summarise, exercise = TRUE}
+
+```
+
+```{r summarise-hint}
+# We can do grouped calculations in summarise after using group by:
+credit_df %>%
+  group_by(Creditability) %>%
+  summarise(median_credit_amount = median(Credit_amount))
+
+```
+
+We have a variable named Gender_marital which is a combination of gender and marital status. Use table() to find out how many observations we have of each instance. 
+
+```{r table, exercise = TRUE}
+
+```
+
+Create a new variable, Gender, which is either "male" or "female", using case_when. Find out how many customers who are male. 
+
+```{r case_when, exercise = TRUE}
+
+```
+
+```{r case_when-solution}
+credit_df <- credit_df %>%
+  mutate(Gender = case_when(Gender_marital %in% c("Man, married", "Man, single") ~ "male",
+         TRUE ~ "female"))
+
+credit_df %>%
+  count(Gender)
+```
+
+Now, create a variable which devides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use either *case_when* or *cut*. 
+
+```{r cut, exercise = TRUE}
+
+```
+
+Lastly, find the average age and credit amount for all different values of occupation, but only for foreign workers.
+
+```{r bonus, exercise = TRUE}
+
+```
+
+```{r bonus-hint}
+# You need a filter, a group_by and a summarise! 
+
+```
+
+```{r quiz_data_manipulation}
+quiz(
+  question(
+    "What does the function mutate do?",
+    answer("It splits a variable into two columns."),
+    answer("It adds one or more variables to a tibble", correct = TRUE),
+    answer("It is used to join together two different tibbles")
+  ),
+  question(
+    "Which package is the most used for data manipulation in R?",
+    answer("dplyr", correct = TRUE),
+    answer("plyr"),
+    answer("zoo"),
+    answer("caret")
+  ),
+  question(
+    "What is a left_join?",
+    answer("left_join(x, y) keeps all obs. in y and adds columns based on x"),
+    answer("left_join(x, y) keeps all obs. in x and adds columns based on y", correct = T)
+  ),
+  question(
+    "What does the following code do: df %>% filter(x > 3)",
+    answer("It removes all observations where x > 3"),
+    answer("It keeps all observations where x > 3", correct = T)
+  )
+)
+```

@@ -1,0 +1,15 @@
+Package: nhhr
+Title: Package for the NHH-course FIE453
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "André",
+           family = "Waage Rivenæs",
+           role = c("aut", "cre"),
+           email = "andre.rivenaes@pwc.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: None
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    learnr
