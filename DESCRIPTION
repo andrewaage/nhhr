@@ -7,9 +7,10 @@ Authors@R:
            role = c("aut", "cre"),
            email = "andre.rivenaes@pwc.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: Includes learnr-exercises and relevant functions for the course.
 License: None
 Encoding: UTF-8
 LazyData: true
 Suggests: 
     learnr
+RoxygenNote: 6.1.0
