@@ -1,7 +1,7 @@
 ---
 title: "Crash course in R for FIE453"
 output: learnr::tutorial
-runtime: shiny_prerendered
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
