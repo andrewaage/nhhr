@@ -83,6 +83,7 @@ Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3
 1. Add y and z. 
 2. *Combine* y and z, creating one long vector with 6 elements.
 3. Create a new vector which tests if each element in y is equal to the elements in z.
+4. Convert y to a character-vector. 
 
 ```{r vectorplus, exercise=TRUE}
 
@@ -91,6 +92,10 @@ Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3
 ```{r vectorplus-hint}
 # The c-function can also be used to combine vectors
 combined <- c(vector_a, vector_b)
+
+# In order to convert the type of x to a character, use:
+x <- as.character(x)
+
 ```
 
 ### Data frames (tibbles)
@@ -116,12 +121,12 @@ df$y
 
 Using the dataframe format, it is easy to conduct analysis. We have already made a more complex version of test_df called student_df.
 
-Run a summary on the dataframe called student_df:
+Run use a summary on the dataframe called student_df:
 ```{r dataframe_summary, exercise=TRUE}
 
 ```
 
-Let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
+In order to illustrate the usefulness of putting data in a dataframe, let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
 
 ```{r dataframe_plot, exercise=TRUE}
 ggplot(student_df, aes(x = age, y = score)) +
@@ -287,4 +292,104 @@ quiz(
     answer("It keeps all observations where x > 3", correct = T)
   )
 )
+```
+
+## Topic 3 - data visualization with ggplot
+### Distribution plots
+Plot a histogram for the "Age"-variable in credit_df. Choose your favorite color!
+
+```{r histogram, exercise = TRUE}
+
+```
+
+```{r histogram-hint}
+# In order to plot a histogram of the variable bar from a dataframe df you write:
+ggplot(df, aes(x = bar)) +
+  geom_histogram(color = "black", fill = "pink")
+
+# Choose color and fill as you like.
+
+```
+
+In the same histogram, set bins = 20.
+```{r histogrambins, exercise = TRUE}
+
+```
+
+Now replace "geom_histogram" with "geom_density".
+
+```{r density, exercise = TRUE}
+
+```
+
+In the same density plot, choose a different *fill* for the different groups of creditability. Consider using the alpha-parameter to make the plots easier to see. NB! You might have to convert Creditability to a factor first.
+
+```{r densityfill, exercise = TRUE}
+
+```
+
+```{r densityfill-solution}
+ggplot(credit_df, aes(x = Age, fill = factor(Creditability))) +
+  geom_density(alpha = 0.5)
+```
+
+### Relationship between variables
+Use a box-plot (geom_boxplot) to illustrate which occupations that have the highest credit amount. Bonus: add a title to the plot.
+
+```{r boxplot, exercise = TRUE}
+
+```
+
+```{r boxplot-hint}
+# In order to create a boxplot of y (continious variable) w.r.t x (factor):
+ggplot(df, aes(x = x, y = y)) +
+  geom_boxplot()
+
+# For adding titles, see ?labs
+
+```
+
+Illustrate the relationship between Creditability and Occupation. Choose a suitable *geom* (this one is a bit harder...)
+
+```{r barplot, exercise = TRUE}
+
+```
+
+```{r barplot-hint}
+# You could start by finding the average creditiability per occupation (group_by + summarise)
+# This could be plotted using e.g. a bar plot, geom_bar. 
+```
+
+Next, illustrate the relationship between length of credit and occupation. 
+
+```{r scatter, exercise = TRUE}
+
+```
+
+```{r scatter-hint}
+# Since we here are looking at the relationship between two numerical variables, you could e.g. use a scatter plot combined with a trend, as such:
+ggplot(df, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth()
+
+```
+
+Create the same plot, except by coloring the different groups of Creditability in different colors. 
+
+```{r scattercolor, exercise = TRUE}
+
+```
+
+Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. 
+
+```{r facet, exercise = TRUE}
+
+```
+
+```{r facet-hint}
+# Plot x against y, split by z
+ggplot(df, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ z)
 ```
