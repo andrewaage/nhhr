@@ -27,7 +27,7 @@ credit_df <- raw %>%
 
 # Select a subset of colums and rename for consistency
 credit_df <- credit_df %>%
-  select(Creditability, 
+  select(Creditworthy = Creditability, 
          Duration_months = Duration.of.Credit..month., 
          Credit_amount = Credit.Amount, 
          Age = Age..years., 
@@ -57,6 +57,10 @@ credit_df <- credit_df %>%
 
 ## Topic 1 - basic R operations
 
+Welcome to this crash course in R, which is created using the "learnr"-package in R. 
+
+Please note that all exercises in this course are independent. That means that objects you create in one exercise will *not* be available in the next. 
+
 ### Vectors
 
 *Let's start with the basics...*
@@ -80,10 +84,11 @@ x <- c(1, 1)
 
 Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3, 4]. 
 
-1. Add y and z. 
+1. Add y and z together.
 2. *Combine* y and z, creating one long vector with 6 elements.
-3. Create a new vector which tests if each element in y is equal to the elements in z.
-4. Convert y to a character-vector. 
+3. Create a new vector which tests if each element in y is equal to the corresponding element in z.
+4. Compute the mean of y using the function mean().
+5. Convert y to a character-vector. 
 
 ```{r vectorplus, exercise=TRUE}
 
@@ -98,9 +103,33 @@ x <- as.character(x)
 
 ```
 
+Create a new vector named "x_na", with the values [1, 3, NA]. "NA" here means that the value is missing.
+
+1. Compute the mean of x_na. What do you get, and why?
+2. Now compute the mean again, but add the option na.rm = TRUE to the function call. 
+
+
+```{r missing, exercise=TRUE}
+
+```
+
+```{r missing-solution}
+
+x_na <- c(1, 3, NA)
+
+# The mean of an object with missing values defaults to "missing" in R.
+mean(x_na) 
+
+# In order to ignore the missing value, and compute the mean only based on existing numbers, use na.rm.
+mean(x_na, na.rm = TRUE)
+
+```
+
 ### Data frames (tibbles)
 
 Create a tibble (note: a tibble is just an improved data frame) called "test_df" with columns "student_number" = [1, 2, 3], "age" = [23, 25, 28], "score" = [2, 3, 4], "city" = c("Bergen", "Oslo", "Trondheim"). Print the output using print()
+
+Next, extract only the "age" column from test_df using "$" and print it. 
 
 ```{r dataframe, exercise=TRUE}
 test_df <- tibble(student_number = ,
@@ -109,24 +138,21 @@ test_df <- tibble(student_number = ,
                   city = )
 ```
 
-Now, extract only the "age" column from test_df using "$" and print it. 
-```{r df_dollar, exercise=TRUE}
 
-```
-
-```{r df_dollar-hint}
+```{r dataframe-hint}
 # To extract y from a datamframe named df, use $ as such:
 df$y
 ```
 
-Using the dataframe format, it is easy to conduct analysis. We have already made a more complex version of test_df called student_df.
+Using the data frame format, it is easy to conduct analysis. We have already made a more complex version of *test_df* called *student_df*.
 
-Run use a summary on the dataframe called student_df:
+Run use a summary on the data frame called student_df:
+
 ```{r dataframe_summary, exercise=TRUE}
 
 ```
 
-In order to illustrate the usefulness of putting data in a dataframe, let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
+In order to illustrate the usefulness of putting data in a data frame, let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
 
 ```{r dataframe_plot, exercise=TRUE}
 ggplot(student_df, aes(x = age, y = score)) +
@@ -139,13 +165,13 @@ ggplot(student_df, aes(x = age, y = score)) +
 ### Quiz
 ```{r quiz}
 quiz(
-  question("What is the difference between a list and a dataframe?",
-    answer("A dataframe can contain anything, while a list is limited to equal length vectors"),
-    answer("A list can contain anything, while a dataframe is limited to equal length vectors", correct = TRUE),
-    answer("A dataframe is simply a more efficient type of list"),
-    answer("A list is simply a more efficient type of dataframe")
+  question("What is the difference between a list and a data frame?",
+    answer("A data frame can contain anything, while a list is limited to equal length vectors"),
+    answer("A list can contain anything, while a data frame is limited to equal length vectors", correct = TRUE),
+    answer("A data frame is simply a more efficient type of list"),
+    answer("A list is simply a more efficient type of data frame")
   ),
-  question("Can a vector contain two elements of different types?",
+  question("Can a vector contain two elements of different data types?",
     answer("No", correct = TRUE),
     answer("Yes"),
     answer("It depends")
@@ -163,7 +189,7 @@ quiz(
 ```
 
 ## Topic 2 - data manipulation
-Now we will move on to use real data, more specifically a dataset from a german credit bank. The data has been imported already, named "credit_df".
+Now we will move on to use real data, more specifically a data set from a German credit bank. The data has been imported already, named "credit_df".
 
 Run a summary on the data frame. 
 
@@ -184,7 +210,7 @@ df %>%
 
 ```
 
-Create a new variable which is TRUE if Foreign_worker == 1 and 0 otherwise. Save it to credit_df and print a table of the variable to the console.
+Create a new variable which is TRUE if Foreign_worker == 1 and FALSE otherwise. Save it to credit_df, then use the table() - function on the new variable to study its distribution. 
 
 ```{r mutate, exercise = TRUE}
 
@@ -195,11 +221,14 @@ Create a new variable which is TRUE if Foreign_worker == 1 and 0 otherwise. Save
 credit_df <- credit_df %>%
   mutate(is_foreign = if_else(Foreign_worker == 1, TRUE, FALSE))
 
+# if_else first computes a TRUE/FALSE statement, and assigns the first value after the comma to all 
+# observations  where the expression evaluates to TRUE. 
+
 table(credit_df$is_foreign)
 
 ```
 
-Create a new dataframe, "credit_df_filtered", which only contains observations where Creditability is 1. How many rows are left in this new dataframe, and how many percent of the observations are creditworthy?
+Create a new data frame, "credit_df_filtered", which only contains observations where Creditworthy is 1. How many rows are left in this new dataframe, and how many percent of the observations are creditworthy?
 
 ```{r filter, exercise = TRUE}
 
@@ -214,16 +243,17 @@ df_filtered <- df %>%
 nrow(df_filtered) / nrow(df)
 ```
 
-Find the average age for customers where Creditability is 1 and 0 respectively. Use group_by + summarise. 
+Find the average age for customers where Creditworthy is 1 and 0 respectively. Use group_by + summarise. 
 
 ```{r summarise, exercise = TRUE}
 
 ```
 
 ```{r summarise-hint}
-# We can do grouped calculations in summarise after using group by:
+# We can do grouped calculations in summarise after using group by.
+# For example, lets calculate the median credit amount for those who are and are not creditworthy. 
 credit_df %>%
-  group_by(Creditability) %>%
+  group_by(Creditworthy) %>%
   summarise(median_credit_amount = median(Credit_amount))
 
 ```
@@ -234,24 +264,37 @@ We have a variable named Gender_marital which is a combination of gender and mar
 
 ```
 
-Create a new variable, Gender, which is either "male" or "female", using case_when. Find out how many customers who are male. 
+Create a new variable, Gender, which is either "male" or "female", using if_else(). Find out how many customers who are male. 
 
-```{r case_when, exercise = TRUE}
+```{r ifelse, exercise = TRUE}
 
 ```
 
-```{r case_when-solution}
+```{r ifelse-solution}
+# You could create the variable as such. Note that the %in%-operator tests if a vector belongs to another vector
 credit_df <- credit_df %>%
-  mutate(Gender = case_when(Gender_marital %in% c("Man, married", "Man, single") ~ "male",
-         TRUE ~ "female"))
+  mutate(Gender = if_else(Gender_marital %in% c("Man, married", "Man, single"), "male", "female"))
 
 credit_df %>%
   count(Gender)
 ```
 
-Now, create a variable which devides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use either *case_when* or *cut*. 
+Now, create a variable which devides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use the function *case_when*, which is similar to if_else but for can be used in cases with more than 2 options.
 
 ```{r cut, exercise = TRUE}
+
+```
+
+```{r cut-hint}
+# In order to use case_when to split up a variable, say age, in 3 groups, do as such:
+df <- df %>%
+  mutate(age_group = case_when(age < 18 ~ "Child",
+                               age < 70 ~ "Adult",
+                               TRUE ~ "Senior"))
+
+# The expression reads as follows: first, everyone under 18 gets tagged as a "child", 
+# then everyone who are under 70 gets tagged as adult. Finally, the only ones who are left will be seniors,
+# who are tagged in the last statement, which tags everyone who isn't tagged yet with the label "senior". 
 
 ```
 
@@ -322,14 +365,14 @@ Now replace "geom_histogram" with "geom_density".
 
 ```
 
-In the same density plot, choose a different *fill* for the different groups of creditability. Consider using the alpha-parameter to make the plots easier to see. NB! You might have to convert Creditability to a factor first.
+In the same density plot, choose a different *fill* for the different groups of Creditworthy. Consider using the alpha-parameter to make the plots easier to see. NB! You might have to convert Creditworthy to a factor first.
 
 ```{r densityfill, exercise = TRUE}
 
 ```
 
 ```{r densityfill-solution}
-ggplot(credit_df, aes(x = Age, fill = factor(Creditability))) +
+ggplot(credit_df, aes(x = Age, fill = factor(Creditworthy))) +
   geom_density(alpha = 0.5)
 ```
 
@@ -349,7 +392,7 @@ ggplot(df, aes(x = x, y = y)) +
 
 ```
 
-Illustrate the relationship between Creditability and Occupation. Choose a suitable *geom* (this one is a bit harder...)
+Illustrate the relationship between Creditworthy and Occupation. Choose a suitable *geom* (this one is a bit harder...)
 
 ```{r barplot, exercise = TRUE}
 
@@ -374,13 +417,13 @@ ggplot(df, aes(x = x, y = y)) +
 
 ```
 
-Create the same plot, except by coloring the different groups of Creditability in different colors. 
+Create the same plot, except by coloring the different groups of Creditworthy in different colors. 
 
 ```{r scattercolor, exercise = TRUE}
 
 ```
 
-Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. 
+Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. Feel free to experiment making your plot as beautiful as possible - pick suitable colors, pick a theme, add a header etc. 
 
 ```{r facet, exercise = TRUE}
 
@@ -392,4 +435,23 @@ ggplot(df, aes(x = x, y = y)) +
   geom_point() +
   geom_smooth() +
   facet_wrap(~ z)
+```
+
+```{r quiz_viz}
+quiz(
+  question("When is it useful to use geom_point (e.g. a scatter plot)",
+    answer("When you are plotting a numeric variable against a factor variable"),
+    answer("When you are plotting two numeric variables against each other", correct = TRUE),
+    answer("When you are plotting two factor variables")
+  ),
+  question("When is it useful to use geom_boxplot?",
+    answer("When you are plotting a numeric variable against a factor variable", correct = TRUE),
+    answer("When you are plotting two numeric variables against each other"),
+    answer("When you are plotting two factor variables")
+  ),
+  question("What is the difference between geoms and aesthetics?",
+    answer("geoms indicate which variables should be plotted, aesthetics indicate the visuals to be used"),
+    answer("aesthetics indicate which variables should be plotted, geoms indicate the visuals to be used", correct = TRUE)
+  )
+)
 ```
