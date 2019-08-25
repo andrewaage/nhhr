@@ -423,6 +423,13 @@ Create the same plot, except by coloring the different groups of Creditworthy in
 
 ```
 
+```{r scattercolor-hint}
+# You can color using a third variable, z, by using the aes of geom_point.
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(aes(colour = z)) +
+  geom_smooth()
+```
+
 Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. Feel free to experiment making your plot as beautiful as possible - pick suitable colors, pick a theme, add a header etc. 
 
 ```{r facet, exercise = TRUE}
