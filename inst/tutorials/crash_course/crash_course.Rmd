@@ -279,7 +279,7 @@ credit_df %>%
   count(Gender)
 ```
 
-Now, create a variable which devides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use the function *case_when*, which is similar to if_else but for can be used in cases with more than 2 options.
+Now, create a variable which divides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use the function *case_when*, which is similar to if_else but for can be used in cases with more than 2 options.
 
 ```{r cut, exercise = TRUE}
 
@@ -403,7 +403,7 @@ Illustrate the relationship between Creditworthy and Occupation. Choose a suitab
 # This could be plotted using e.g. a bar plot, geom_bar. 
 ```
 
-Next, illustrate the relationship between length of credit and occupation. 
+Next, illustrate the relationship between length of credit and credit amount. 
 
 ```{r scatter, exercise = TRUE}
 
@@ -423,7 +423,18 @@ Create the same plot, except by coloring the different groups of Creditworthy in
 
 ```
 
+```{r scattercolor-hint}
+# You can color using a third variable, z, by using the aes of geom_point.
+ggplot(df, aes(x = x, y = y)) +
+  geom_point(aes(colour = z)) +
+  geom_smooth()
+```
+
 Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. Feel free to experiment making your plot as beautiful as possible - pick suitable colors, pick a theme, add a header etc. 
+Some inspiration can be found here:
+
+- [altering the points in geom point](https://ggplot2.tidyverse.org/reference/geom_point.html)
+- [ggplot themes](https://ggplot2.tidyverse.org/reference/ggtheme.html)
 
 ```{r facet, exercise = TRUE}
 
