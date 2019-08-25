@@ -431,6 +431,10 @@ ggplot(df, aes(x = x, y = y)) +
 ```
 
 Create the same plot, but now add a third variable: split the plot by occupation. Use facet_wrap. Feel free to experiment making your plot as beautiful as possible - pick suitable colors, pick a theme, add a header etc. 
+Some inspiration can be found here:
+
+- [altering the points in geom point](https://ggplot2.tidyverse.org/reference/geom_point.html)
+- [ggplot themes](https://ggplot2.tidyverse.org/reference/ggtheme.html)
 
 ```{r facet, exercise = TRUE}
 
