@@ -279,7 +279,7 @@ credit_df %>%
   count(Gender)
 ```
 
-Now, create a variable which devides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use the function *case_when*, which is similar to if_else but for can be used in cases with more than 2 options.
+Now, create a variable which divides Credit_amount in three groups: < 1000, 1000 - 2000 and > 2000. You can use the function *case_when*, which is similar to if_else but for can be used in cases with more than 2 options.
 
 ```{r cut, exercise = TRUE}
 
