@@ -403,7 +403,7 @@ Illustrate the relationship between Creditworthy and Occupation. Choose a suitab
 # This could be plotted using e.g. a bar plot, geom_bar. 
 ```
 
-Next, illustrate the relationship between length of credit and occupation. 
+Next, illustrate the relationship between length of credit and credit amount. 
 
 ```{r scatter, exercise = TRUE}
 
