@@ -71,15 +71,26 @@ Write the R code required to add two plus two:
 
 ```
 
+```{r two-plus-two-solution}
+2 + 2
+```
+
+
 Write the R code required to create a vector [2, 2] and name it "x". Print "x" to the console using print().
 
 ```{r vector, exercise=TRUE}
 
 ```
 
-```{r vector-hint}
+```{r vector-solution}
 # Use the c-function to create vectors, e.g
-x <- c(1, 1)
+x <- c(2, 2)
+print(x)
+```
+
+```{r vector-hint}
+ # Use the c-function to create vectors, e.g
+ x <- c(1, 1)
 ```
 
 Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3, 4]. 
@@ -94,7 +105,28 @@ Write the R code required to create vectors y and z, y = [1, 2, 3] and z = [1, 3
 
 ```
 
-```{r vectorplus-hint}
+```{r vectorplus-solution}
+# 1
+y <- c(1, 2, 3)
+z <- c(1, 3, 4)
+
+y + z
+
+# 2
+c(y, z)
+
+# 3
+y == z
+
+# 4
+mean(y)
+
+# 5
+as.character(y)
+
+```
+
+```{r vectorplus-hint, eval = FALSE}
 # The c-function can also be used to combine vectors
 combined <- c(vector_a, vector_b)
 
@@ -106,8 +138,7 @@ x <- as.character(x)
 Create a new vector named "x_na", with the values [1, 3, NA]. "NA" here means that the value is missing.
 
 1. Compute the mean of x_na. What do you get, and why?
-2. Now compute the mean again, but add the option na.rm = TRUE to the function call. 
-
+2. Now compute the mean again, but add the option na.rm = TRUE to the function call.
 
 ```{r missing, exercise=TRUE}
 
@@ -138,6 +169,19 @@ test_df <- tibble(student_number = ,
                   city = )
 ```
 
+```{r dataframe-solution}
+# To extract y from a datamframe named df, use $ as such:
+test_df <- tibble(student_number = c(1, 2, 3),
+                  age = c(23, 25, 28),
+                  score = c(2, 3, 4),
+                  city = c("Bergen", "Oslo", "Trondheim"))
+# Print
+print(test_df)
+
+# Extract age only (as a vector) using the $-notation.
+test_df$age
+
+```
 
 ```{r dataframe-hint}
 # To extract y from a datamframe named df, use $ as such:
@@ -150,6 +194,10 @@ Run use a summary on the data frame called student_df:
 
 ```{r dataframe_summary, exercise=TRUE}
 
+```
+
+```{r dataframe_summary-solution}
+summary(student_df)
 ```
 
 In order to illustrate the usefulness of putting data in a data frame, let's look at the relationship between age and grade. For now, just run the code below - we will come back to plotting later on. 
@@ -197,9 +245,21 @@ Run a summary on the data frame.
 
 ```
 
-Select only the "Foreign_worker"-column from "credit_df". 
+```{r summary2-solution}
+summary(credit_df)
+```
+
+Select only the "Foreign_worker"-column from "credit_df" using "select". 
 
 ```{r select, exercise = TRUE}
+
+```
+
+```{r select-solution}
+credit_df %>%
+  select(Foreign_worker)
+
+# Note: this is NOT the same as credit_df$Foreign_worker, as select returns a data-frame, while the latter returns a vector.
 
 ```
 
@@ -219,12 +279,12 @@ Create a new variable which is TRUE if Foreign_worker == 1 and FALSE otherwise. 
 ```{r mutate-solution}
 # In order to add a variable to a dataframe, you can use mutate as such:
 credit_df <- credit_df %>%
-  mutate(is_foreign = if_else(Foreign_worker == 1, TRUE, FALSE))
+  mutate(is_not_foreign = if_else(Foreign_worker == 1, TRUE, FALSE))
 
 # if_else first computes a TRUE/FALSE statement, and assigns the first value after the comma to all 
 # observations  where the expression evaluates to TRUE. 
 
-table(credit_df$is_foreign)
+table(credit_df$is_not_foreign)
 
 ```
 
@@ -233,6 +293,16 @@ Create a new data frame, "credit_df_filtered", which only contains observations 
 ```{r filter, exercise = TRUE}
 
 ```
+
+
+```{r filter-solution}
+credit_df_filtered <- credit_df %>%
+  filter(Creditworthy == 1)
+
+# Count rows in each df
+nrow(credit_df_filtered) / nrow(credit_df)
+```
+
 
 ```{r filter-hint}
 # In order to filter a dataframe, use the filter-function.
@@ -249,6 +319,13 @@ Find the average age for customers where Creditworthy is 1 and 0 respectively. U
 
 ```
 
+```{r summarise-solution}
+credit_df %>%
+  group_by(Creditworthy) %>%
+  summarise(mean_age = mean(Age))
+
+```
+
 ```{r summarise-hint}
 # We can do grouped calculations in summarise after using group by.
 # For example, lets calculate the median credit amount for those who are and are not creditworthy. 
@@ -262,6 +339,14 @@ We have a variable named Gender_marital which is a combination of gender and mar
 
 ```{r table, exercise = TRUE}
 
+```
+
+```{r table-solution}
+table(credit_df$Gender_marital)
+
+# Alternative:
+credit_df %>%
+  count(Gender_marital)
 ```
 
 Create a new variable, Gender, which is either "male" or "female", using if_else(). Find out how many customers who are male. 
@@ -285,6 +370,22 @@ Now, create a variable which divides Credit_amount in three groups: < 1000, 1000
 
 ```
 
+
+```{r cut-solution}
+credit_df <- credit_df %>% 
+  mutate(
+    credit_group = case_when(
+      Credit_amount < 1000 ~ "Low",
+      Credit_amount < 2000 ~ "Medium",
+      TRUE ~ "High"
+    )
+  )
+
+credit_df %>%
+  count(credit_group)
+
+```
+
 ```{r cut-hint}
 # In order to use case_when to split up a variable, say age, in 3 groups, do as such:
 df <- df %>%
@@ -301,6 +402,15 @@ df <- df %>%
 Lastly, find the average age and credit amount for all different values of occupation, but only for foreign workers.
 
 ```{r bonus, exercise = TRUE}
+
+```
+
+```{r bonus-solution}
+credit_df %>%
+  filter(Foreign_worker == 1) %>%
+  group_by(Occupation) %>%
+  summarise(mean_age = mean(Age),
+            mean_credit = mean(Credit_amount))
 
 ```
 
@@ -345,6 +455,12 @@ Plot a histogram for the "Age"-variable in credit_df. Choose your favorite color
 
 ```
 
+```{r histogram-solution}
+ggplot(credit_df, aes(x = Age)) +
+  geom_histogram(color = "black", fill = "pink")
+
+```
+
 ```{r histogram-hint}
 # In order to plot a histogram of the variable bar from a dataframe df you write:
 ggplot(df, aes(x = bar)) +
@@ -359,11 +475,22 @@ In the same histogram, set bins = 20.
 
 ```
 
+```{r histogrambins-solution}
+ggplot(credit_df, aes(x = Age)) +
+  geom_histogram(color = "black", fill = "pink", bins = 20)
+```
+
 Now replace "geom_histogram" with "geom_density".
 
 ```{r density, exercise = TRUE}
 
 ```
+
+```{r density-solution}
+ggplot(credit_df, aes(x = Age)) +
+  geom_density(color = "black", fill = "pink")
+```
+
 
 In the same density plot, choose a different *fill* for the different groups of Creditworthy. Consider using the alpha-parameter to make the plots easier to see. NB! You might have to convert Creditworthy to a factor first.
 
@@ -383,6 +510,22 @@ Use a box-plot (geom_boxplot) to illustrate which occupations that have the high
 
 ```
 
+```{r boxplot-solution}
+# Simple:
+ggplot(df, aes(x = Occupation, y = Credit_amount)) +
+  geom_boxplot()
+
+# Advanced:
+ggplot(credit_df, aes(x = fct_reorder(Occupation, - Credit_amount), y = Credit_amount)) +
+  geom_boxplot(fill = "steelblue") +
+  labs(title = "Occupation vs credit amount", y = "Amount of credit", x = "Occupation") +
+  theme_minimal() +
+  coord_flip()
+
+# Note: fct_reorder is used to order the data before plotting
+
+```
+
 ```{r boxplot-hint}
 # In order to create a boxplot of y (continious variable) w.r.t x (factor):
 ggplot(df, aes(x = x, y = y)) +
@@ -398,6 +541,21 @@ Illustrate the relationship between Creditworthy and Occupation. Choose a suitab
 
 ```
 
+```{r barplot-solution}
+# First a summary
+df_sum <- credit_df %>%
+  group_by(Occupation) %>%
+  summarise(mean_creditworthy = mean(Creditworthy))
+
+# Plot the summary values
+ggplot(df_sum, aes(x = Occupation, y = mean_creditworthy)) +
+  geom_col(fill = "steelblue", color = "black") +
+  geom_label(aes(label = scales::percent(mean_creditworthy))) +
+  theme_minimal()
+
+# Note: scales::percent turns the raw number into a nice, readable percentage.
+```
+
 ```{r barplot-hint}
 # You could start by finding the average creditiability per occupation (group_by + summarise)
 # This could be plotted using e.g. a bar plot, geom_bar. 
@@ -406,6 +564,13 @@ Illustrate the relationship between Creditworthy and Occupation. Choose a suitab
 Next, illustrate the relationship between length of credit and credit amount. 
 
 ```{r scatter, exercise = TRUE}
+
+```
+
+```{r scatter-solution}
+ggplot(credit_df, aes(x = Duration_months, y = Credit_amount)) +
+  geom_point() +
+  geom_smooth()
 
 ```
 
@@ -420,6 +585,13 @@ ggplot(df, aes(x = x, y = y)) +
 Create the same plot, except by coloring the different groups of Creditworthy in different colors. 
 
 ```{r scattercolor, exercise = TRUE}
+
+```
+
+```{r scattercolor-solution}
+ggplot(credit_df, aes(x = Duration_months, y = Credit_amount, color = factor(Creditworthy))) +
+  geom_point() +
+  geom_smooth()
 
 ```
 
@@ -440,13 +612,22 @@ Some inspiration can be found here:
 
 ```
 
+```{r facet-solution}
+# Plot x against y, split by z
+ggplot(credit_df, aes(x = Duration_months, y = Credit_amount, color = factor(Creditworthy))) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~ Occupation)
+```
+
 ```{r facet-hint}
 # Plot x against y, split by z
 ggplot(df, aes(x = x, y = y)) +
-  geom_point() +
+  geom_point(aes(colour = z)) +
   geom_smooth() +
-  facet_wrap(~ z)
+  facet_wrap(~ Occupation)
 ```
+
 
 ```{r quiz_viz}
 quiz(
