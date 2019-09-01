@@ -66,14 +66,6 @@ ggplot(test, aes(y = Predicted_duration, x = Duration_months)) +
   theme_minimal()
 ```
 
-Moreover, with the basic "plot"-function we can get a diagnostic plot.
-
-```{r}
-par(mfrow = c(2, 2))
-plot(linear_model)
-```
-
-
 Compute RMSE and R-squared on the test data:
 
 ```{r}
@@ -96,7 +88,7 @@ linear_model <- lm(Duration_months ~
                    + Foreign_worker, 
                    data = train)
 
-summary(linear_model)
+# summary(linear_model)
 ```
 
 We could also add interaction terms (variable multiplied by another variable) or squared effects: 
