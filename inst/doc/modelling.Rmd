@@ -1,0 +1,122 @@
+---
+title: "Modelling credit data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Modelling credit data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{r setup}
+library(nhhr)
+library(rsample)
+library(yardstick)
+library(tidyverse)
+```
+
+In this document we will go through an example of how to create linear models in R using the German credit data. The dataset will already be available for you upon writing nhhr::credit_df. 
+
+```{r}
+credit_df <- nhhr::credit_df
+```
+
+Now we split the data in train/test using rsample::initial_split. The code below will put 66% of your data in train and 34% in test. 
+
+```{r}
+split <- rsample::initial_split(credit_df, prop = 0.66)
+train <- rsample::training(split)
+test <- rsample::testing(split)
+```
+
+Now we are ready to build a linear model. We can use "lm".
+
+```{r}
+linear_model <- lm(Duration_months ~ Age, data = train)
+summary(linear_model)
+```
+
+Let's get the prediction and plot it against X.  
+
+```{r}
+test$Predicted_duration <- predict(linear_model, newdata = test)
+
+ggplot(test, aes(y = Predicted_duration, x = Age)) +
+  geom_line(color = "blue") +
+  theme_minimal()
+
+```
+
+We can also plot the predicted value against the actual value:
+
+```{r}
+
+ggplot(test, aes(y = Predicted_duration, x = Duration_months)) +
+  geom_point() +
+  geom_abline(color = "red", linetype = "dashed") +
+  expand_limits(x = c(0, 60), y = c(0, 60)) +
+  theme_minimal()
+```
+
+Compute RMSE and R-squared on the test data:
+
+```{r}
+rmse <- test %>%
+  yardstick::rmse(truth = Duration_months, estimate = Predicted_duration)
+
+rsq <- test %>%
+  yardstick::rsq(truth = Duration_months, estimate = Predicted_duration)
+
+list(rmse = rmse$.estimate, rsquared = rsq$.estimate)
+```
+
+Now we can also add more variables:
+
+```{r}
+linear_model <- lm(Duration_months ~ 
+                     Gender_marital
+                   + Age
+                   + Occupation
+                   + Foreign_worker, 
+                   data = train)
+
+# summary(linear_model)
+```
+
+We could also add interaction terms (variable multiplied by another variable) or squared effects: 
+
+```{r}
+linear_model <- lm(Duration_months ~ 
+                     Gender_marital * Occupation
+                   + poly(Age, 2)
+                   + Foreign_worker, 
+                   data = train)
+
+# broom::glance is an alternative to summary(model) if you just want the overall results formatted in a nice table
+broom::glance(linear_model)
+```
+
+Note: Compare the two plots below to investigate the different between a normal term and a squared term
+
+```{r}
+ggplot(credit_df, aes(x = Age, y = Credit_amount)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(formula = y ~ x, method = "lm") +
+  scale_y_log10() +
+  theme_minimal()
+
+ggplot(credit_df, aes(x = Age, y = Credit_amount)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(formula = y ~ poly(x, 2), method = "lm") +
+  scale_y_log10() +
+  theme_minimal()
+```
+
