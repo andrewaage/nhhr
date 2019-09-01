@@ -5,12 +5,18 @@ Authors@R:
     person(given = "André",
            family = "Waage Rivenæs",
            role = c("aut", "cre"),
-           email = "andre.rivenaes@pwc.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           email = "andre.rivenaes@pwc.com")
 Description: Includes learnr-exercises and relevant functions for the course.
 License: None
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    learnr
+    learnr,
+    knitr,
+    rmarkdown,
+    tidyverse,
+    yardstick,
+    rsample,
+    broom
 RoxygenNote: 6.1.0
+VignetteBuilder: knitr
